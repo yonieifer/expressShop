@@ -1,6 +1,7 @@
 import express from "express";
 import { getAllProducts, getFilteredProducts } from "../repository/productsRepo.js";
 import { findCustomerById } from "../repository/customersRepo.js";
+import { loadCustomer} from "../middlewares/loadCustomer.js"
 
 const router = express.Router();
 
@@ -25,18 +26,10 @@ router.get("/products", async (req, res) => {
     });
 });
 
-router.get("/account/balance", async (req, res) => {
-    const customerId = req.query.customerId;
-    const customer = await findCustomerById(customerId);
-
-    if (!customer) {
-        return res
-            .status(400)
-            .send({ success: false, message: `Customer ${customerId} not exists` });
-    }
+router.get("/account/balance", loadUser,  async (req, res) => {
     res.send({
         success: true,
-        data: customer.balance,
+        data: req.customer.balance,
     });
 });
 
