@@ -3,7 +3,7 @@ import { loadJson } from "./jsonRepo.js";
 export default async (req, res, next) => {
     try {
         const allCustomers = await loadJson("/customers.json")
-        const customerId = req.query.customerId;
+        const customerId = req.query.customerId || req.body.customerId
 
         if (!customerId) {
         return res
