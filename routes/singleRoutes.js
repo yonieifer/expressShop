@@ -32,7 +32,7 @@ router.get("/account/balance", async (req, res) => {
     if (!customer) {
         return res
             .status(400)
-            .send({ success: false, message: "Customer not exists" });
+            .send({ success: false, message: `Customer ${customerId} not exists` });
     }
     res.send({
         success: true,
