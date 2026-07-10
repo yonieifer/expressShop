@@ -1,7 +1,7 @@
-import { loadJson } from "./jsonRepo.js";
+import { loadJson } from "../repository/jsonRepo.js";
 
 export default async (req, res, next) => {
-    try {
+    try {        
         const allCustomers = await loadJson("/customers.json")
         const customerId = req.query.customerId || req.body.customerId
 
@@ -16,10 +16,13 @@ export default async (req, res, next) => {
         if (!customer) {
         return res
             .status(400)
-            .send({ success: false, message: `Custom ${customerId} not exists`});
+            .send({ success: false, message: `Customer ${customerId} not exists`});
         }
 
         req.customer = customer
+        req.allCustomers = allCustomers
+        
+        next()
 
     } catch (error) {
         res.status(500).send({"success": false, "message": "Server internal error"})

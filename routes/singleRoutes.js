@@ -1,7 +1,7 @@
 import express from "express";
-import { getAllProducts, getFilteredProducts } from "../repository/productsRepo.js";
+import { getFilteredProducts } from "../repository/productsRepo.js";
 import { findCustomerById } from "../repository/customersRepo.js";
-import { loadCustomer} from "../middlewares/loadCustomer.js"
+import loadCustomer from "../middlewares/loadCustomer.js"
 
 const router = express.Router();
 
@@ -26,7 +26,7 @@ router.get("/products", async (req, res) => {
     });
 });
 
-router.get("/account/balance", loadUser,  async (req, res) => {
+router.get("/account/balance", loadCustomer,  async (req, res) => {
     res.send({
         success: true,
         data: req.customer.balance,

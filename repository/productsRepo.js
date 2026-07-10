@@ -1,9 +1,10 @@
 import { loadJson } from "./jsonRepo.js";
 
 
-export const getAllProducts = async () => {
+export const getProductById = async (id) => {
     const allProducts = await loadJson("/products.json");
-    return allProducts
+    const product = allProducts.find(p => p.id === +id)
+    return product
 }
 
 export const getFilteredProducts = async ({inStock, maxPrice, search}) => {
