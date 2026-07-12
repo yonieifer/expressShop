@@ -1,7 +1,7 @@
 import express from "express";
 import { loadJson, writeJson } from "../repository/jsonRepo.js";
 import loadCustomer from "../middlewares/loadCustomer.js";
-import { productAvailable } from "../repository/ordersRepo.js";
+import { productAvailable, checkout } from "../repository/ordersRepo.js";
 
 const router = express.Router();
 
@@ -27,6 +27,7 @@ router.get("/", loadCustomer, async (req, res) => {
 
 router.post("/checkout", loadCustomer, (req, res) => {
     const customer = req.customer;
+
     if (customer.cart.length === 0) {
         res.status(400).send({
             success: false,
@@ -34,6 +35,7 @@ router.post("/checkout", loadCustomer, (req, res) => {
         });
         return;
     }
+    const totalPrice = 0;
     customer.cart.forEach((p) => {
         if (!productAvailable(p.productId, p.quantity)) {
             res.status(400).send({
@@ -42,5 +44,18 @@ router.post("/checkout", loadCustomer, (req, res) => {
             });
             return;
         }
+        totalPrice += p.price;
+    });
+
+    if (customer.balance < totalPrice) {
+        res.status(400).send({
+            success: false,
+            message: "to expensive",
+        });
+    }
+    const newId = checkout(customer, totalPrice);
+    res.send({
+        success: true,
+        message: `order id: ${newId}| total price: ${totalPrice}`,
     });
 });
