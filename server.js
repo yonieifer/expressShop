@@ -2,6 +2,7 @@ import express from "express";
 import "dotenv/config";
 import singleRouter from "./routes/singleRoutes.js";
 import cartRouter  from "./routes/cartRoutes.js";
+import orderRouter from "./routes/orderRoutes.js"
 
 const port = process.env.PORT;
 const dbPath = process.env.DB_PATH;
@@ -18,7 +19,7 @@ app.use((req, res, next) => {
 
 app.use("/cart", cartRouter);
 
-app.use("/order", () => console.log());
+app.use("/order", orderRouter);
 
 app.use("/", singleRouter);
 

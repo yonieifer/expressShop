@@ -59,3 +59,5 @@ router.post("/checkout", loadCustomer, (req, res) => {
         message: `order id: ${newId}| total price: ${totalPrice}`,
     });
 });
+
+export default router
