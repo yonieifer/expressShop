@@ -2,6 +2,7 @@ import express from "express";
 import { loadJson, writeJson } from "../repository/jsonRepo.js";
 import loadCustomer from "../middlewares/loadCustomer.js";
 import { productAvailable, checkout } from "../repository/ordersRepo.js";
+import { getProductById } from "../repository/productsRepo.js";
 
 const router = express.Router();
 
@@ -25,7 +26,7 @@ router.get("/", loadCustomer, async (req, res) => {
     }
 });
 
-router.post("/checkout", loadCustomer, (req, res) => {
+router.post("/checkout", loadCustomer, async (req, res) => {
     const customer = req.customer;
 
     if (customer.cart.length === 0) {
@@ -35,17 +36,17 @@ router.post("/checkout", loadCustomer, (req, res) => {
         });
         return;
     }
-    const totalPrice = 0;
-    customer.cart.forEach((p) => {
-        if (!productAvailable(p.productId, p.quantity)) {
-            res.status(400).send({
+    let totalPrice = 0;
+    for(const p of customer.cart)
+        const isAvailable = await productAvailable(p.productId, p.quantity)
+        if (!isAvailable) {
+            return res.status(400).send({
                 success: false,
                 message: `product ${p.productId} not available`,
             });
-            return;
         }
-        totalPrice += p.price;
-    });
+        const product = await getProductById(p.productId)
+        totalPrice += product.price * p.quantity
 
     if (customer.balance < totalPrice) {
         res.status(400).send({
@@ -53,7 +54,7 @@ router.post("/checkout", loadCustomer, (req, res) => {
             message: "to expensive",
         });
     }
-    const newId = checkout(customer, totalPrice);
+    const newId = await checkout(customer, totalPrice);
     res.send({
         success: true,
         message: `order id: ${newId}| total price: ${totalPrice}`,
