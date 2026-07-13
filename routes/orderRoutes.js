@@ -37,7 +37,7 @@ router.post("/checkout", loadCustomer, async (req, res) => {
         return;
     }
     let totalPrice = 0;
-    for(const p of customer.cart)
+    for(const p of customer.cart){
         const isAvailable = await productAvailable(p.productId, p.quantity)
         if (!isAvailable) {
             return res.status(400).send({
@@ -47,6 +47,7 @@ router.post("/checkout", loadCustomer, async (req, res) => {
         }
         const product = await getProductById(p.productId)
         totalPrice += product.price * p.quantity
+    }
 
     if (customer.balance < totalPrice) {
         res.status(400).send({

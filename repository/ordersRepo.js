@@ -17,7 +17,8 @@ export const checkout = async (customer, total) => {
     await writeJson("/products.json", allProducts)
 
     const allCustomers = await loadJson("/customers.json")
-    const customerInJson = allCustomers.find(c => c.customerId === customer.customerId)
+    const customerInJson = allCustomers.find(c => c.customerId === +customer.customerId)
+    const orderItems = [...customer.cart];
     if (customerInJson) {
         customer.balance -= total
         customer.cart = []
@@ -30,7 +31,7 @@ export const checkout = async (customer, total) => {
     const newOrder = {
         "id": newId,
         "customerId": customer.id,
-        "items": customer.cart,
+        "items": orderItems,
         "total": total,
         "createdAt": new Date().toISOString()
     }
